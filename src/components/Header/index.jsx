@@ -1,9 +1,12 @@
 import React from "react";
+import PageTitleBar from "../PageTitleBar";
+import PageBanner from "../PageBanner";
 
 const Header = () => {
   return (
     <header>
-      <h1>Products Grid..</h1>
+      <PageTitleBar />
+      <PageBanner />
     </header>
   );
 };
