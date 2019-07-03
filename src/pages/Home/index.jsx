@@ -18,8 +18,10 @@ const Home = () => {
     <HomePageContext.Provider value={pageDetails}>
       <Header />
       <SortByContext.Provider value={{ sortBy, setSortBy }}>
-        <SortOption />
-        <ProductList />
+        <main>
+          <SortOption />
+          <ProductList />
+        </main>
       </SortByContext.Provider>
     </HomePageContext.Provider>
   );

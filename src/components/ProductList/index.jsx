@@ -1,7 +1,20 @@
 import React, { useState, useEffect, useContext } from "react";
+import Product from "../Product";
 import { SortByContext } from "../../Context";
+import { makeStyles } from "@material-ui/core";
+
+const useStyle = makeStyles(theme => ({
+  root: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    listStyle: "none",
+    width: "100%"
+  }
+}));
 
 const ProductList = () => {
+  const classes = useStyle();
   const { sortBy } = useContext(SortByContext);
   const [products, setProducts] = useState([]);
 
@@ -19,10 +32,12 @@ const ProductList = () => {
   }, [sortBy]);
 
   return (
-    <ul>
-      {products.map((product, i) => {
-        return <li key={i}>{product.face}</li>;
-      })}
+    <ul className={classes.root}>
+      {products.map((product, i) => (
+        <li key={i}>
+          <Product data={product} />
+        </li>
+      ))}
     </ul>
   );
 };
