@@ -1,32 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
+import ProductDetails from "../ProductDetails";
 import { makeStyles } from "@material-ui/styles";
-import dayDifference from "../../utils/dayDifference";
-import { fontSize } from "@material-ui/system";
 
 const useStyles = makeStyles(theme => ({
-  root: props => ({
-    width: "200px",
-    fontSize: props.size
+  root: {
+    minWidth: "300px"
+  },
+  face: props => ({
+    fontSize: props.faceSize,
+    height: "100px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
   })
 }));
 
 const Product = props => {
-  const { data } = props;
-  const classes = useStyles(data);
-  let st = "";
-  const dayDiff = dayDifference(data.date);
-  console.log(dayDiff);
-  for (let i = 0; i < data.face.length; i++) {
-    st = st + "m " + data.face[i];
-  }
+  const { face, size, price, date } = props.data;
+  const classes = useStyles({ faceSize: size });
   return (
     <div className={classes.root}>
-      <div>{data.face}</div>
-      <p style={{ fontSize: "14px" }}>
-        Size: {data.size} <br />
-        Price: ${data.price / 100} <br /> Added:
-        {dayDiff <= 7 ? `${dayDiff} days ago` : data.date}
-      </p>
+      <div className={classes.face}>{face}</div>
+      <ProductDetails size={size} price={price} date={date} l={face.length} />
     </div>
   );
 };
