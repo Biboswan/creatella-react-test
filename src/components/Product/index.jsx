@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ProductDetails from "../ProductDetails";
 import { makeStyles } from "@material-ui/styles";
 

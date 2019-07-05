@@ -20,23 +20,51 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
+const pageLimit = 15;
+let baseApiUrl = `${process.env.REACT_APP_SERVER}/api/products`;
+
 const ProductList = () => {
   const classes = useStyle();
   const { sortBy } = useContext(SortByContext);
   const [products, setProducts] = useState([]);
 
+  //Product load is paginated. page holds the no. of pages for which data has been fetched
+  const [page, setPage] = useState(0);
+
   useEffect(() => {
-    let url = `${process.env.REACT_APP_SERVER}/api/products`;
+    let query = `?_page=1&_limit=${pageLimit}`;
     if (sortBy !== "None") {
-      url += `?_sort=${sortBy.toLowerCase()}`;
-      console.log(url);
+      query += `&_sort=${sortBy.toLowerCase()}`;
     }
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        setProducts(data);
-      });
+    const value = sessionStorage.getItem(query);
+    if (!value) {
+      fetch(baseApiUrl + query)
+        .then(res => res.json())
+        .then(data => {
+          setProducts(data);
+          setPage(page => page + 1);
+          sessionStorage.setItem(query, JSON.stringify(data));
+        });
+    } else {
+      setProducts(JSON.parse(value));
+    }
   }, [sortBy]);
+
+  useEffect(() => {
+    requestIdleCallback(() => {
+      let query = `?_page=${page + 1}&_limit=${pageLimit}`;
+      if (sortBy !== "None") {
+        query += `&_sort=${sortBy.toLowerCase()}`;
+      }
+      if (!sessionStorage.getItem(query)) {
+        fetch(baseApiUrl + query)
+          .then(res => res.json())
+          .then(data => {
+            sessionStorage.setItem(query, JSON.stringify(data));
+          });
+      }
+    });
+  }, [page]);
 
   return (
     <ul className={classes.root}>
