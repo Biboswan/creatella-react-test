@@ -9,10 +9,11 @@ const useStyle = makeStyles(theme => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
+    alignItems: "flex-end",
     flexWrap: "wrap",
     listStyle: "none",
     width: "100%",
-    padding: "0",
+    padding: 0,
     [theme.breakpoints.up("sm")]: {
       justifyContent: "space-around"
     }

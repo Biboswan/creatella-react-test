@@ -4,11 +4,11 @@ import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    minWidth: "300px"
+    minWidth: 300
   },
   face: props => ({
     fontSize: props.faceSize,
-    height: "100px",
+    height: 100,
     display: "flex",
     justifyContent: "center",
     alignItems: "center"

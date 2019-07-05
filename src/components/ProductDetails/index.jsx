@@ -17,14 +17,14 @@ const ProductDetails = props => {
     <Grid
       classes={{ root: classes.root }}
       container
-      direction="row"
-      justify="center"
+      direction="column"
       alignItems="center"
     >
-      <Typography>
-        Size: {size} <br />
-        Price: ${price / 100} <br /> Added:
-        <DateAdded from={date} />
+      <Typography>Size: {size}</Typography>
+      <Typography>Price: ${price / 100}</Typography>
+      <Typography color="textSecondary">
+        <br />
+        Added: <DateAdded from={date} />
       </Typography>
     </Grid>
   );
