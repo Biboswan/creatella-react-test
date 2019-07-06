@@ -36,37 +36,6 @@ const ProductList = () => {
 
   const [isCatalogEnd, setIsCatalogEnd] = useState(false);
 
-  //callback for the product observer
-  const callback = (entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        let page = Math.ceil(products.length / pageLimit);
-        observer.unobserve(entry.target);
-        let query = `?_page=${page + 1}&_limit=${pageLimit}`;
-        if (sortBy !== "None") {
-          query += `&_sort=${sortBy.toLowerCase()}`;
-        }
-        const value = sessionStorage.getItem(query);
-        if (!value) {
-          fetch(baseApiUrl + query)
-            .then(res => res.json())
-            .then(data => {
-              setIsLoading(true);
-              if (data.length === 0) {
-                setIsCatalogEnd(true);
-              } else {
-                const modifiedProducts = [...products, ...data];
-                setProducts(modifiedProducts);
-                sessionStorage.setItem(query, JSON.stringify(modifiedProducts));
-              }
-            });
-        } else {
-          setProducts(products => [...products, ...JSON.parse(value)]);
-        }
-      }
-    });
-  };
-
   /**
    * Whenever the sort type changes we gotta start fetching products from page 1
    */
@@ -76,15 +45,17 @@ const ProductList = () => {
       query += `&_sort=${sortBy.toLowerCase()}`;
     }
     const value = sessionStorage.getItem(query);
+
     if (!value) {
+      const fetchProducts = async () => {
+        const res = await fetch(baseApiUrl + query);
+        const data = await res.json();
+        setIsLoading(false);
+        setProducts(data);
+        sessionStorage.setItem(query, JSON.stringify(data));
+      };
       setIsLoading(true);
-      fetch(baseApiUrl + query)
-        .then(res => res.json())
-        .then(data => {
-          setIsLoading(false);
-          setProducts(data);
-          sessionStorage.setItem(query, JSON.stringify(data));
-        });
+      fetchProducts();
     } else {
       setProducts(JSON.parse(value));
     }
@@ -103,25 +74,58 @@ const ProductList = () => {
           query += `&_sort=${sortBy.toLowerCase()}`;
         }
         if (!sessionStorage.getItem(query)) {
-          fetch(baseApiUrl + query)
-            .then(res => res.json())
-            .then(data => {
-              if (data.length === 0) {
-                setIsCatalogEnd(true);
-              } else {
-                sessionStorage.setItem(query, JSON.stringify(data));
-              }
-            });
+          const fetchProducts = async () => {
+            const res = await fetch(baseApiUrl + query);
+            const data = await res.json();
+            if (data.length === 0) {
+              setIsCatalogEnd(true);
+            } else {
+              sessionStorage.setItem(query, JSON.stringify(data));
+            }
+          };
+          fetchProducts();
         }
       });
     }
   }, [products]);
 
   useEffect(() => {
+    //callback for the product observer
+    const productObserverCallback = (entries, observer) => {
+      entries.forEach(async entry => {
+        if (entry.isIntersecting) {
+          observer.unobserve(entry.target);
+          let page = Math.ceil(products.length / pageLimit);
+          let query = `?_page=${page + 1}&_limit=${pageLimit}`;
+          if (sortBy !== "None") {
+            query += `&_sort=${sortBy.toLowerCase()}`;
+          }
+          const value = sessionStorage.getItem(query);
+          if (!value) {
+            const res = await fetch(baseApiUrl + query);
+            const data = await res.json();
+            setIsLoading(true);
+            if (data.length === 0) {
+              setIsCatalogEnd(true);
+            } else {
+              const modifiedProducts = [...products, ...data];
+              setProducts(modifiedProducts);
+              sessionStorage.setItem(query, JSON.stringify(modifiedProducts));
+            }
+          } else {
+            setProducts(products => [...products, ...JSON.parse(value)]);
+          }
+        }
+      });
+    };
+
     if (products.length && !isCatalogEnd && "IntersectionObserver" in window) {
       let page = Math.ceil(products.length / pageLimit);
-      const options = { root: null }; //rootMargin: "0px 0px 200px 0px"
-      productObserver = new IntersectionObserver(callback, options);
+      const options = { root: null };
+      productObserver = new IntersectionObserver(
+        productObserverCallback,
+        options
+      );
       let n = pageLimit * page - 1;
       let target = document.querySelector(`#product-${n}`);
       productObserver.observe(target);
