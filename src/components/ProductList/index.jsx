@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
+import { Grid } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 import Product from "../Product";
 import RandomAdvertisement from "../RandomAdvertisement";
 import Spinner from "../Spinner";
 import { SortByContext } from "../../Context";
-import { makeStyles, Typography } from "@material-ui/core";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -22,7 +23,7 @@ const useStyle = makeStyles(theme => ({
 }));
 
 const pageLimit = 15;
-let baseApiUrl = `${process.env.REACT_APP_SERVER}/api/products`;
+const baseApiUrl = `${process.env.REACT_APP_SERVER}/api/products`;
 let productObserver;
 
 const ProductList = () => {
@@ -117,23 +118,18 @@ const ProductList = () => {
   }, [products]);
 
   useEffect(() => {
-    if (products.length) {
+    if (products.length && !isCatalogEnd && "IntersectionObserver" in window) {
       let page = Math.ceil(products.length / pageLimit);
-      if ("IntersectionObserver" in window) {
-        const options = { root: null };
-        //rootMargin: "0px 0px 200px 0px"
-        productObserver = new IntersectionObserver(callback, options);
-        let n = pageLimit * page - 1;
-        let target = document.querySelector(`#product-${n}`);
-        console.log(n);
-        //console.log(target.innerText);
-        productObserver.observe(target);
-      }
+      const options = { root: null }; //rootMargin: "0px 0px 200px 0px"
+      productObserver = new IntersectionObserver(callback, options);
+      let n = pageLimit * page - 1;
+      let target = document.querySelector(`#product-${n}`);
+      productObserver.observe(target);
     }
   }, [products]);
 
   return (
-    <div>
+    <Grid container direction="column" alignItems="center">
       {products.length === 0 && isLoading && <Spinner />}
       <ul className={classes.root} id="product-list">
         {products.map((product, i) => (
@@ -151,7 +147,7 @@ const ProductList = () => {
       </ul>
       {products.length && isLoading && <Spinner />}
       {isCatalogEnd && <Typography>~ end of catalogue ~</Typography>}
-    </div>
+    </Grid>
   );
 };
 
