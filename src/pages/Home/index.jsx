@@ -13,7 +13,9 @@ const pageDetails = {
 
 const Home = () => {
   const [sortBy, setSortBy] = useState("None");
-  useEffect(() => (document.title = pageDetails.title), []);
+  useEffect(() => {
+    document.title = pageDetails.title;
+  }, []);
   return (
     <HomePageContext.Provider value={pageDetails}>
       <Header />
