@@ -40,6 +40,7 @@ const ProductList = () => {
    * Whenever the sort type changes we gotta start fetching products from page 1
    */
   useEffect(() => {
+    //TODO: Use memoization to calculate query
     let query = `?_page=1&_limit=${pageLimit}`;
     if (sortBy !== "None") {
       query += `&_sort=${sortBy.toLowerCase()}`;
@@ -89,6 +90,9 @@ const ProductList = () => {
     }
   }, [products]);
 
+  /**
+   * Whenever products state is updated observe the last product
+   */
   useEffect(() => {
     //callback for the product observer
     const productObserverCallback = (entries, observer) => {
