@@ -15,6 +15,9 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "column",
     justifyContent: "center"
   },
+  labelColor: {
+    color: theme.palette.secondary.main
+  },
   sortForm: {
     display: "flex",
     flexDirection: "column",
@@ -38,7 +41,7 @@ const SortOption = () => {
   return (
     <FormControl className={classes.sortForm} component="form">
       <FormLabel className={classes.sortFormLabel} component="div">
-        <span>Sort By:</span>
+        <div className={classes.labelColor}>Sort By:</div>
       </FormLabel>
       <RadioGroup
         aria-label="position"
